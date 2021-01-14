@@ -126,12 +126,31 @@ exports.login = (req, res,next) => {
     })(req,res,next)
 }
 
-exports.dashboard = (req, res) => {
+exports.dashboard = async (req, res) => {
 
     //var session_data = req.session.user;
-    console.log(req.session);
+    console.log(req.user._id);
 
-    res.render('pages/dashboard', { title: 'dashbaord Page',session: req.session});
+    /*------Get all registered User from DB-----------------*/
+    const users = await User.find({ _id: { $ne: req.user._id } });
+
+    try{
+        var payload = {
+            title:'All User',
+            res:[],
+            status:true
+        }
+
+    } catch(err){
+
+        var payload = {
+            title:'All User',
+            res:'',
+            status:true
+        }
+    }
+
+    res.status(200).render('pages/dashboard_2', payload);
 }
 
 

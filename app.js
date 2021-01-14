@@ -18,10 +18,14 @@ require("dotenv").config();
 //app.use( express.static( "public" ) );
 
 /*-----Connect to DB----------*/
-mongoose.connect(process.env.DATABASE,{
+
+/*-----Required DB---------*/
+require('./config/dbConnect')();
+
+/* mongoose.connect(process.env.DATABASE,{
     useNewUrlParser: true,
     useUnifiedTopology: true
-})
+}) */
 
 
 // view engine setup
@@ -67,7 +71,7 @@ io.on("connection", (socket)=>{
 
     console.log('connection with socket.io, completed');
 
-    /*-------------Listner when user discount-------*/
+    /*-------------Listner when user disconnect-------*/
     socket.on("disconnect", function() {
         console.log("user disconnected");
     }); 
@@ -94,7 +98,6 @@ io.on("connection", (socket)=>{
 
 //*=================Chat System Code END Here=================*/
 
-
 app.use((req, res, next) => {
     //res.locals.session    = req.session;
     res.locals.user    = req.user;
@@ -108,11 +111,13 @@ app.use((req, res, next) => {
 /* All routes Which are not Required loged in/authantication*/
 app.use('/',require("./routes/Routes"));
 
+
+app.use('/api',require("./routes/api/ApiRoutes"));
+
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('*', function(req, res){
     res.render('error/404', { title: res });
 }); 
-
 
 
 module.exports = app;
