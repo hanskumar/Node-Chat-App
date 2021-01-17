@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wassup chat app</title>
+    <link rel="stylesheet" href="assets/css/wassup_style.css">
+</head>
+
+<body>
+    <section class="chat__section">
+        <div class="brand">
+            <img height="40" src="assets/images/wassup.png" alt="">
+            <h1>Welcome ! <%= user.name %></h1>
+        </div>
+        <form id="form">
+            <div class="message__area">
+                <i  id="typing"></i>
+            </div>
+            <div>
+                <textarea id="textarea" class="submit_on_enter" cols="30" rows="1" placeholder="Write a message..."></textarea>
+            </div>
+            
+        </form>
+
+    </section>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script  src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/client.js"></script>
+
+    
+</body>
+
+</html>

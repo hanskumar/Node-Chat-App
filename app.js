@@ -64,43 +64,68 @@ const server = app.listen(3000, () => console.log(`Server is stated on http://lo
 
 const io = require('socket.io')(server)
 
+const users = {};
 //*=================Chat System Code Start Here=================*/
-let totalCount = 0;
-//const users = {};
 io.on("connection", (socket)=>{
 
     console.log('connection with socket.io, completed');
 
-    /*-------------Listner when user disconnect-------*/
-    socket.on("disconnect", function() {
-        console.log("user disconnected");
-    }); 
+    /*-------Event Listner when someone join the chat------------*/
+    socket.on("setup", userData => {
+        socket.join(userData._id);
+        socket.emit("connected");
+        console.log("user logged In "+ userData.name);
+    });
 
-    //---Listner    
-    socket.on('message', (msg) => {
-        console.log(`msg : ${msg}`);
-        socket.broadcast.emit('message', msg)
+   /*------Listner when user join the chat----------*/    
+   socket.on("JoinChat", chatroom => {
+        console.log("user join the chat "+chatroom);
+        socket.join(chatroom);
     });
 
     //Someone is typing Listner
-    socket.on("typing", data => { 
-        console.log(data);
-        socket.broadcast.emit("notifyTyping", { user: data.user, message: data.message }); 
+    socket.on("typing", chatRoomData => { 
+        //console.log("Chat IDD"+chatRoomData.ChatID);
+        /*-----Emit typing event to client in specific room--------*/
+        socket.in(chatRoomData.ChatID).emit("notifyTyping",chatRoomData);
     }); 
 
-    //when soemone stops typing Listner
-    socket.on("stopTyping", () => {
-        console.log("stop Typing Listner");
-        socket.broadcast.emit("notifyStopTyping");
+    //Someone is Stoptyping Listner
+    socket.on("stopTyping", chatRoom => { 
+        //console.log("Chat IDD"+chatRoomData.ChatID);
+        /*-----Emit typing event to client in specific room--------*/
+        socket.in(chatRoom).emit("notifyStopTyping","");
+    }); 
+
+    //---Message Listner    
+    socket.on('message', (MsgData) => {
+        //console.log(`msg : ${MsgData.message}`);
+
+        console.log(`MsgData : ${MsgData}`);
+        socket.in(MsgData.ChatID).emit("message",MsgData);
+    });
+
+    socket.on('login', function(data){
+        console.log('a user ' + data._id + ' connected');
+        //console.log(data._id);
+        // saving userId to object with socket ID
+        //users[socket.id] = data.userId;
+
+        users[socket.id] = data._id;
+
+        console.log(users);
+
+        /*-----Broadcast a msg to every new user execpt to new joiner-----*/    
+        socket.broadcast.emit('loginNotify',data)
     });
 
 });
 
 //*=================Chat System Code END Here=================*/
-
 app.use((req, res, next) => {
-    //res.locals.session    = req.session;
-    res.locals.user    = req.user;
+    //res.locals.user    = req.user;
+
+    res.locals.session    = req.user || '';
 
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg  = req.flash('error_msg');

@@ -4,22 +4,25 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: "Name is required!",
+      required: true,
+      trim:true
     },
     username: {
       type: String,
-      required: "username is required!",
+      required: true,
+      trim:true
     },
     email: {
       type: String,
-      required: "Email is required!",
+      trim:true,
     },
     password: {
       type: String,
       required: "Password is required!",
     },
     pofile_pic: {
-      type: String
+      type: String,
+      default:'/images/user-default.png'
     },
     online_status: {
       type: String

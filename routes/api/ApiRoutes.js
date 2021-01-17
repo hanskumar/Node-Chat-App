@@ -8,6 +8,6 @@ const ApiController = require("../../controllers/ApiController");
 router.get("/GetUsers", ApiController.getAllUsers);
 
 
-
+router.post("/chat/create", ApiController.CreateChat);
 
 module.exports = router;

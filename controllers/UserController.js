@@ -6,6 +6,8 @@ const bcrypt        = require('bcrypt');
 
 const passport = require("passport");
 
+const path          = require('path');
+
 
 exports.index = (req, res) => {
 
@@ -21,7 +23,7 @@ exports.registerpost = async (req, res) => {
 
     const { name,username, password ,email} = req.body;
 
-    if(!name || !username || !password || !email){
+    if(!name || !username || !password ){
         req.flash('error_msg', 'All filed are Required!');
         res.redirect('back')
     } 
@@ -150,7 +152,7 @@ exports.dashboard = async (req, res) => {
         }
     }
 
-    res.status(200).render('pages/dashboard_2', payload);
+    res.status(200).render('pages/dashboard', payload);
 }
 
 
@@ -158,6 +160,29 @@ exports.logout = (req, res) => {
 
     req.logout();
     return res.redirect('/');
+}
+
+
+/**
+ * Upload profile image on server
+ */
+exports.upload_profileImage = async (req, res,next) => {
+
+    if(!req.file){
+        console.log(req.file.croppedImage);
+        res.status(400).send('uououiuouo');
+    }
+    
+    var file_path = `/uploads/${req.file.filename}`;
+
+    req.user = await User.findByIdAndUpdate(req.user._id, { pofile_pic: file_path}, { new: true });
+
+    //res.status(200).send(req.user);
+    res.sendStatus(204);  // Success but given no content
+} 
+
+exports.GetImagePath = (req,res) => {
+    res.sendFile(path.join(__dirname, "../uploads/" + req.params.path));
 }
 
 

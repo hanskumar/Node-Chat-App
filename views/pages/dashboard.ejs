@@ -1,36 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wassup chat app</title>
-    <link rel="stylesheet" href="assets/css/wassup_style.css">
-</head>
+        <meta charset="utf-8" />
+        <title> Chat </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="Responsive Bootstrap 4 Chat App" name="description" />
+        <meta content="Themesbrand" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
 
-<body>
-    <section class="chat__section">
-        <div class="brand">
-            <img height="40" src="assets/images/wassup.png" alt="">
-            <h1>Welcome ! <%= user.name %></h1>
-        </div>
-        <form id="form">
-            <div class="message__area">
-                <i  id="typing"></i>
-            </div>
-            <div>
-                <textarea id="textarea" class="submit_on_enter" cols="30" rows="1" placeholder="Write a message..."></textarea>
-            </div>
-            
-        </form>
+        <!-- owl.carousel css -->
+        <link rel="stylesheet" href="assets/libs/owl.carousel/assets/owl.carousel.min.css">
+        <link rel="stylesheet" href="assets/libs/owl.carousel/assets/owl.theme.default.min.css">
 
-    </section>
-    <script src="/socket.io/socket.io.js"></script>
+        <!-- Bootstrap Css -->
+        <link href="assets/css/bootstrap-dark.min.css" id="bootstrap-dark-style" rel="stylesheet" type="text/css" />
+        <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        
+        <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
 
-    <script  src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="/client.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.css" integrity="sha512-949FvIQOibfhLTgmNws4F3DVlYz3FmCRRhJznR22hx76SKkcpZiVV5Kwo0iwK9L6BFuY+6mpdqB2+vDIGVuyHg==" crossorigin="anonymous" />
 
+    </head>
+
+    <body>
+
+        <div class="layout-wrapper d-lg-flex">
+
+            <!-- start chat-leftsidebar -->
+            <div class="chat-leftsidebar mr-lg-1">
+
+                <div class="tab-content">
+
+                    <!-- Start chats tab-pane -->
+                    <div class="tab-pane fade show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
+                        <!-- Start chats content -->
+                        <div>
+                            <div class="px-4 pt-4">
+
+                            <!--<div class="chat-user-img online align-self-center mr-3" style="padding-bottom: 27px;">
+                                <img src="/assets/images/user-default.png" class="rounded-circle avatar-xs" alt="">
+                                <%= session.name %> <a class="" href="/logout"> <i class="ri-logout-circle-r-line float-right text-muted"></i></a>
+                            </div>-->
+
+                                <div class="mb-4 profile-user">
+                                    <img src="<%= session.pofile_pic %>" class="rounded-circle avatar-lg img-thumbnail" alt="">
+                                    
+                                    <i class="ri-pencil-fill"></i><input type="file" class="btn bg-light avatar-xs p-0 rounded-circle profile-photo-edit" id="filePhoto" type="file" name="filePhoto">
+                                </div>
+                                <a class="" href="/logout"> <i class="ri-logout-circle-r-line float-right text-muted"></i></a>
+                                <%= session.name %>
+
+                                <!-----Profile image modal-------->
+                                <div class="modal fade" id="imageUploadModal" tabindex="-1" role="dialog" aria-labelledby="imageUploadModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="imageUploadModalLabel">Crop and uploade profile picture</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close"></button><span aria-hidden="true">&times;</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!--<input id="filePhoto" type="file" name="filePhoto" />-->
+                                                <div class="imagePreviewContainer"><img id="imagePreview" /></div>
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                            <button class="btn btn-primary" id="imageUploadButton" type="button">Save</button></div>
+                                        </div>
+                                    </div>   
+                                </div>
+                                <!-----Profile image modal-------->
+
+                                <div class="search-box chat-search-box">
+                                    <div class="input-group mb-3 bg-light  input-group-lg rounded-lg">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-link text-muted pr-1 text-decoration-none" type="button">
+                                                <i class="ri-search-line search-icon font-size-18"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control bg-light" placeholder="Search messages or users">
+                                    </div> 
+                                </div> <!-- Search Box-->
+                            </div> <!-- .p-4 -->
     
-</body>
+                            <!-- Start chat-message-list -->
+                            <div class="px-2">
+                                <div class="chat-message-list" data-simplebar>
+                                    <!--------Leftside User----------->
+                                    <ul class="list-unstyled chat-list chat-user-list">
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- End chat-message-list -->
+                        </div>
+                        <!-- Start chats content -->
+                    </div>
+                    <!-- End chats tab-pane -->
+                </div>
+                <!-- end tab content -->
+            </div>
+            <!-- end chat-leftsidebar -->
 
+            <!-- Start User chat -->
+            <div class="user-chat w-100 overflow-hidden">
+                <div class="d-lg-flex">hello
+                </div>
+            </div>
+            <!-- End User chat -->
+        </div>
+        <!-- end  layout wrapper -->
+
+        <!-- JAVASCRIPT -->
+        <script src="assets/libs/jquery/jquery.min.js"></script>
+        <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/libs/simplebar/simplebar.min.js"></script>
+        
+        <!--<script src="assets/libs/node-waves/waves.min.js"></script>-->
+
+        <!-- Magnific Popup-->
+        <!--<script src="assets/libs/magnific-popup/jquery.magnific-popup.min.js"></script>-->
+
+        <!-- owl.carousel js -->
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.js" integrity="sha512-oqBsjjSHWqkDx4UKoU+5IUZN2nW2qDp2GFSKw9+mcFm+ZywqfBKp79nfWmGPco2wzTWuE46XpjtCjZ9tFmI12g==" crossorigin="anonymous"></script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/assets/js/clientSocket.js"></script>
+        <script src="assets/js/comman.js"></script>
+
+    </body>
 </html>
