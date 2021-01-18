@@ -107,9 +107,7 @@ function readURL(input) {
             aspectRatio: 1 / 1,
             background: false
         });
-
       }
-      
       reader.readAsDataURL(input.files[0]); // convert to base64 string
     } else {
         console.log("nope");

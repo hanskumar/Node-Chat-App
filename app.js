@@ -13,11 +13,8 @@ const toastr        = require("express-toastr");
 
 const passport      = require("passport");
 
-
 require("dotenv").config();
 //app.use( express.static( "public" ) );
-
-/*-----Connect to DB----------*/
 
 /*-----Required DB---------*/
 require('./config/dbConnect')();

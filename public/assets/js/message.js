@@ -154,3 +154,35 @@ function DisplayMessage(outhtml,container) {
 function scrollToBottom() {
     $(".chatContainer").scrollTop = $(".chatContainer").scrollHeight
 }
+
+/**
+ * File upload in chat stream
+ *
+ */
+$(".media_attachment").change(function() {
+    //console.log("clicked");
+    var file = this.files[0];
+
+    var ChatID = $('.chatID').val().trim(); 
+
+    const formData = new FormData();
+    formData.append('media_attachment', file, file.name);
+    formData.append('ChatID',ChatID);
+
+    console.log(formData);
+    //return false;
+
+    $.ajax('/media_attachment', {
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success(response) {
+            console.log(response);
+        },
+        error() {
+            console.log('Upload error');
+        },
+    });
+
+});

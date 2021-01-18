@@ -1,11 +1,9 @@
-const Swal          = require('sweetalert2');
-const User          = require('../models/UserModel');
 
+const User          = require('../models/UserModel');
 const bcrypt        = require('bcrypt');
 //const passport      = require('../config/passport');
 
 const passport = require("passport");
-
 const path          = require('path');
 
 

@@ -16,7 +16,6 @@ const fs     = require('fs');
 exports.Getmessages = async (req, res) => {
 
     /*-------------Get all the Chats Here-----------*/
-
     var allChats = await Chat.find({users: { $elemMatch: { $eq: req.session.user._id } } })
     .populate("users");
 
@@ -90,7 +89,6 @@ exports.InitiateChat = async (req, res,next) => {
 /**
  * Save Message in db
 */
-
 exports.SaveMessage = async (req, res,next) => {
 
     const {message,ChatID} = req.body;
@@ -110,8 +108,6 @@ exports.SaveMessage = async (req, res,next) => {
     } */
 
     var chat = await Chat.findOne({ _id: ChatID, users: { $elemMatch: { $eq: req.user._id } } });
-
-    //res.status(200).send(chat);
 
     if(chat){
 
@@ -139,11 +135,47 @@ exports.SaveMessage = async (req, res,next) => {
     }
 }
 
+/**
+ * Upload media file on server in chat stream
+ */
+exports.UploadMedia = async (req, res,next) => {
 
-exports.test = (req,res)=>{
-    
-        res.writeHead(200, {'Content-Type': 'audio/mp3'});
-        let opStream = fs.createReadStream('public/images/done-for-you-612.mp3');
-        opStream.pipe(res);
-   
-}
+    console.log(req.body.ChatID);
+
+    return;
+    if(!req.file || !req.ChatID){
+        res.status(400).json({status:false,message:'File is Required'});
+    }
+
+    var file_path = `/uploads/${req.file.filename}`;
+
+    var chat = await Chat.findOne({ _id: ChatID, users: { $elemMatch: { $eq: req.user._id } } });
+
+    if(chat){
+
+        let postData = {
+            readby:[],
+            sender: req.user._id,
+            message: '',
+            media: file_path,
+            chat:ChatID
+        }
+
+        Message.create(postData)
+        .then(async newMessageData => {
+            newMessageData = await User.populate(postData, { path: "sender" })
+
+            res.status(201).send(newMessageData);
+        })
+        .catch(error => {
+            console.log(error);
+            res.sendStatus(400);
+        })
+
+    } else {
+        res.status(400).render('404', { title: 'Something went wrong,Please try again' });
+    }
+
+    //res.status(200).send(req.user);
+    res.sendStatus(204);  // Success but given no content
+} 
