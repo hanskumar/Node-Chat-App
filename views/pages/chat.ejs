@@ -91,7 +91,11 @@
                                     <% if (data.users) { %>
                                             <% for (let usersInChat of data.users) { %>
                                             <div class="mr-3">
-                                                <img src="/assets/<%= usersInChat.pofile_pic%>" class="rounded-circle avatar-xs" alt="">
+                                                <% if(!usersInChat.pofile_pic) { %>
+                                                    <div class="avatar-xs"><span class="avatar-title rounded-circle bg-soft-primary text-primary">H</span></div>   
+                                                <% } else {%>        
+                                                <img src="<%=usersInChat.pofile_pic%>" class="rounded-circle avatar-xs" alt="">
+                                                <% } %>
                                             </div>
                                                 <div class="media-body overflow-hidden">
                                                     <h5 class="font-size-16 mb-0 text-truncate">

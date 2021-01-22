@@ -1,3 +1,6 @@
+/* var mySound = new Audio("/public/assets/audio/noti.mp3");
+mySound.load(); */
+
 /**
  * Send Message event Handler
  */
@@ -101,6 +104,7 @@ $(document).ready(function(){
 
        // scrollToBottom();
     });
+
 });
 
 
@@ -186,3 +190,19 @@ $(".media_attachment").change(function() {
     });
 
 });
+
+
+$(window).keydown(function(event){
+    console.log(event.keyCode);
+        socket.emit('bang'); 
+});
+
+
+$(document).ready(function(){
+    var sound = new Audio('/public/audio/1.mp3');   
+
+    socket.on('play', function () {
+        sound.play();   
+    });
+});
+

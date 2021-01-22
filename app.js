@@ -19,6 +19,7 @@ require("dotenv").config();
 /*-----Required DB---------*/
 require('./config/dbConnect')();
 
+
 /* mongoose.connect(process.env.DATABASE,{
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -98,8 +99,9 @@ io.on("connection", (socket)=>{
     socket.on('message', (MsgData) => {
         //console.log(`msg : ${MsgData.message}`);
 
-        console.log(`MsgData : ${MsgData}`);
+        //console.log(`MsgData : ${MsgData}`);
         socket.in(MsgData.ChatID).emit("message",MsgData);
+
     });
 
     socket.on('login', function(data){
@@ -114,6 +116,11 @@ io.on("connection", (socket)=>{
 
         /*-----Broadcast a msg to every new user execpt to new joiner-----*/    
         socket.broadcast.emit('loginNotify',data)
+    });
+
+    socket.on('bang', function(){
+        console.log('bang');
+        io.emit('play');
     });
 
 });
