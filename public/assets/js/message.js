@@ -50,6 +50,10 @@ $(document).keyup(function(event){
 });
 
 $(document).ready(function(){
+
+    var session = JSON.parse($(".local_data").val());
+    //console.log(session);
+
     var ChatID = $('.chatID').val().trim(); 
 
     /*------Emit an Event when user join the chat-----------*/
@@ -153,4 +157,25 @@ function DisplayMessage(outhtml,container) {
 
 function scrollToBottom() {
     $(".chatContainer").scrollTop = $(".chatContainer").scrollHeight
+}
+
+/**
+ * Send media file in chat
+ */
+$('#uploadmedia').bind('change', function(e){
+    var data = e.originalEvent.target.files[0];
+    readThenSendFile(data);      
+});
+
+function readThenSendFile(data){
+
+    var reader = new FileReader();
+    reader.onload = function(evt){
+        var msg ={};
+        msg.username = session.username;
+        msg.file = evt.target.result;
+        msg.fileName = data.name;
+        socket.emit('base64 file', msg);
+    };
+    reader.readAsDataURL(data);
 }
