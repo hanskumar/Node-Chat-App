@@ -6,11 +6,9 @@ const Messageschema = new mongoose.Schema(
   {
     readBy: [{ type: Schema.Types.ObjectId, ref: 'User',required: true}],
     sender: { type: Schema.Types.ObjectId, ref: 'User',required: true},
-    //receiver: [{ type: Schema.Types.ObjectId, ref: 'User',required: true}],
-    message:  {
-        type: String,
-        required:true,
-    },
+    message:  { type: String},
+    media:{ type: String,  default:'text' }, // if user send media attachement save in this field
+    media_content:Buffer,
     chat:{ type: Schema.Types.ObjectId, ref: 'Chat',required: true},
   },{timestamps: true}
 );

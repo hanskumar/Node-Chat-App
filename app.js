@@ -13,20 +13,24 @@ const toastr        = require("express-toastr");
 
 const passport      = require("passport");
 
+const streamBuffers = require('stream-buffers');
+const Grid          = require('gridfs-stream');
+
 
 require("dotenv").config();
 //app.use( express.static( "public" ) );
 
-/*-----Connect to DB----------*/
-
 /*-----Required DB---------*/
 require('./config/dbConnect')();
 
-/* mongoose.connect(process.env.DATABASE,{
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}) */
+var conn = mongoose.connection;
 
+Grid.mongo = mongoose.mongo;
+var gfs;
+conn.once('open', function () {
+  console.log('open');
+  gfs = Grid(conn.db);
+});
 
 // view engine setup
 app.set('view engine', 'ejs');
@@ -60,7 +64,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Swal.fire('Hello world!')
 
 
-const server = app.listen(3000, () => console.log(`Server is stated on http://localhost:3000`));
+const server = app.listen(process.env.PORT, () => console.log(`Server is stated on http://localhost:${process.env.PORT}`));
 
 const io = require('socket.io')(server)
 
@@ -100,9 +104,14 @@ io.on("connection", (socket)=>{
     //---Message Listner    
     socket.on('message', (MsgData) => {
         //console.log(`msg : ${MsgData.message}`);
-
-        console.log(`MsgData : ${MsgData}`);
+        //console.log(`MsgData : ${MsgData}`);
         socket.in(MsgData.ChatID).emit("message",MsgData);
+    });
+
+    socket.on('bang', (Data) => {
+        console.log('bang',Data);
+        //io.emit('play');
+        socket.in(Data.ChatID).emit("play",Data);
     });
 
     socket.on('login', function(data){
@@ -117,20 +126,7 @@ io.on("connection", (socket)=>{
 
         /*-----Broadcast a msg to every new user execpt to new joiner-----*/    
         socket.broadcast.emit('loginNotify',data)
-    });
-
-    socket.on('base64 file', function (msg) {
-        console.log('received base64 file from' + msg.username);
-        socket.username = msg.username;
-        // socket.broadcast.emit('base64 image', //exclude sender
-        io.sockets.emit('base64 file',  //include sender
-            {
-              username: socket.username,
-              file: msg.file,
-              fileName: msg.fileName
-            }
-        );
-    });
+    }); 
 
 });
 

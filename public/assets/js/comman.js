@@ -107,9 +107,7 @@ function readURL(input) {
             aspectRatio: 1 / 1,
             background: false
         });
-
       }
-      
       reader.readAsDataURL(input.files[0]); // convert to base64 string
     } else {
         console.log("nope");
@@ -145,12 +143,12 @@ $("#imageUploadButton").click(() => {
 
 });
 
-$(document).ready(function(event) {
+/* $(document).ready(function(event) {
     $("#emojionearea2").emojioneArea({
         pickerPosition: "top",
         tonesStyle: "radio"
     });
-});
+}); */
 
 
  
