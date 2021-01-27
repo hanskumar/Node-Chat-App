@@ -105,7 +105,7 @@ mySound.load(); */
 
             console.log("message reciver event on client side::"+ msg.message);
 
-            var outhtml = CreateMessageHtml(msg,'');
+            var outhtml = CreateMessageHtml(msg,'','message');
 
             var container = $(".chatContainer");
             DisplayMessage(outhtml,container);
@@ -133,7 +133,7 @@ mySound.load(); */
 
                 /*------Check if Message saved succssfully-----*/
 
-                var outhtml = CreateMessageHtml(results,'right');
+                var outhtml = CreateMessageHtml(results,'right','message');
 
                 var container = $(".chatContainer");
                 DisplayMessage(outhtml,container);
@@ -143,30 +143,39 @@ mySound.load(); */
         }
     }
 
-    function CreateMessageHtml(response,msg_type) {
+    function CreateMessageHtml(response,msg_type,media_type) {
 
-        //var timestamp = timeDifference(new Date(), new Date(response.createdAt)); 
-        
+        if(media_type == 'media'){
+            return `<li class="list-inline-item message-img-list">
+                <div>
+                    <a class="popup-img d-inline-block m-1" href="assets/images/small/img-1.jpg" title="Project 1">
+                        <img src="assets/images/small/img-1.jpg" alt="" class="rounded border">
+                    </a>
+                </div>
+            </li>`
+
+        } else if(media_type =='message') {
+
             return `<li class="${msg_type}">
-                <div class="conversation-list">
-                
-                <div class="user-chat-content">
-                    <div class="ctext-wrap">
-                        <div class="ctext-wrap-content">
-                            <p class="mb-0">${response.message}</p>
-                            
-                            <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:02</span></p>
+                    <div class="conversation-list">
+                        <div class="user-chat-content">
+                            <div class="ctext-wrap">
+                                <div class="ctext-wrap-content">
+                                    <p class="mb-0">${response.message}</p>
+                                    
+                                    <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:02</span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </li>`
+                </li>`
+        }
     }
 
     function DisplayMessage(outhtml,container) {
         
         container.append(outhtml);
-        scrollToBottom();
+        //scrollToBottom();
     }
 
     function scrollToBottom() {
@@ -187,9 +196,6 @@ mySound.load(); */
         formData.append('media_attachment', file, file.name);
         formData.append('ChatID',ChatID);
 
-        console.log(formData);
-        //return false;
-
         $.ajax('/media_attachment', {
             method: 'POST',
             data: formData,
@@ -197,6 +203,11 @@ mySound.load(); */
             contentType: false,
             success(response) {
                 console.log(response);
+
+                var outhtml = CreateMessageHtml(response,'right','media');
+
+                var container = $(".chatContainer");
+                DisplayMessage(outhtml,container);
             },
             error() {
                 console.log('Upload error');
@@ -216,8 +227,6 @@ mySound.load(); */
           console.log('Failed to play...' + err);
         }
     }
-
-
     
     $(document).ready(function(){
 
@@ -240,6 +249,7 @@ mySound.load(); */
 
             Stop_recording();
         });
+
     });
 
 
@@ -316,6 +326,83 @@ function CreateMediaContent(data,mediaType,msg_type){
             </div>
         </li>`;
 }
+
+
+/**
+ * Vedio Recording Functions
+ * 
+ */
+
+    let preview = document.getElementById("preview");
+    let recording = document.getElementById("recording");
+    let startButton = document.getElementById("start_video_recoder");
+    let stopButton = document.getElementById("stopButton");
+    let downloadButton = document.getElementById("downloadButton");
+    let logElement = document.getElementById("log");
+
+    let recordingTimeMS = 5000;
+
+    function startVedioRecording(){
+
+        let recorder = new MediaRecorder(stream);
+        let data = [];
+
+        recorder.ondataavailable = event => data.push(event.data);
+        recorder.start();
+        log(recorder.state + " for " + (lengthInMS/1000) + " seconds...");
+
+        let stopped = new Promise((resolve, reject) => {
+            recorder.onstop = resolve;
+            recorder.onerror = event => reject(event.name);
+        });
+
+        let recorded = wait(lengthInMS).then(
+            () => recorder.state == "recording" && recorder.stop()
+        );
+
+        return Promise.all([
+            stopped,
+            recorded
+        ])
+        .then(() => data);
+    }
+
+    
+    function stop(stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+
+    startButton.addEventListener("click", function() {
+        navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        }).then(stream => {
+          preview.srcObject = stream;
+          downloadButton.href = stream;
+          preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+          return new Promise(resolve => preview.onplaying = resolve);
+        }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+        .then (recordedChunks => {
+          let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+
+
+          
+
+          recording.src = URL.createObjectURL(recordedBlob);
+          
+
+          downloadButton.href = recording.src;
+          downloadButton.download = "RecordedVideo.webm";
+      
+          log("Successfully recorded " + recordedBlob.size + " bytes of " +
+              recordedBlob.type + " media.");
+        })
+        .catch(log);
+      }, false);
+      stopButton.addEventListener("click", function() {
+        stop(preview.srcObject);
+      }, false);
 
 
 function startTimer(){

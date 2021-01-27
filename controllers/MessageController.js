@@ -9,7 +9,7 @@ const Message      = require('../models/MessageModel');
 const mongoose = require("mongoose");
 const multer = require('multer');
 //const path     = require('path');
-//var helper     = require('../helpers/helper');
+var helper     = require('../helpers/helpers');
 
 const fs     = require('fs');
 
@@ -78,9 +78,10 @@ exports.InitiateChat = async (req, res,next) => {
         var payload = {
             title:'Chat Page',
             data:chat,
-            message:message
+            message:message,
+            helper:helper
         }
-        //res.status(200).send(payload);
+        //return res.status(200).send(payload);
         res.render('pages/chat', payload);
     } else {
         res.status(400).render('404', { title: 'Something went wrong,Please try again' });
@@ -141,44 +142,31 @@ exports.SaveMessage = async (req, res,next) => {
  */
 exports.UploadMedia = async (req, res,next) => {
 
-    console.log(req.body.ChatID);
-
-    return;
-    if(!req.file || !req.ChatID){
-        res.status(400).json({status:false,message:'File is Required'});
+    if(req.file =='' || req.body.ChatID ==''){
+        return res.send("file is empty");
     }
 
     var file_path = `/uploads/${req.file.filename}`;
 
-    var chat = await Chat.findOne({ _id: ChatID, users: { $elemMatch: { $eq: req.user._id } } });
-
-    if(chat){
-
-        let postData = {
-            readby:[],
-            sender: req.user._id,
-            message: '',
-            media: file_path,
-            chat:ChatID
-        }
-
-        Message.create(postData)
-        .then(async newMessageData => {
-            newMessageData = await User.populate(postData, { path: "sender" })
-
-            res.status(201).send(newMessageData);
-        })
-        .catch(error => {
-            console.log(error);
-            res.sendStatus(400);
-        })
-
-    } else {
-        res.status(400).render('404', { title: 'Something went wrong,Please try again' });
+    let postData = {
+        readby:[],
+        sender: req.user._id,
+        media: 'media',
+        media_content:file_path,
+        message: 'This is Media Content',
+        chat:req.body.ChatID
     }
 
-    //res.status(200).send(req.user);
-    res.sendStatus(204);  // Success but given no content
+    Message.create(postData)
+    .then(async newMessageData => {
+        newMessageData = await User.populate(postData, { path: "sender" })
+
+        res.status(201).send(newMessageData);
+    })
+    .catch(error => {
+        console.log(error);
+        res.sendStatus(400);
+    })
 } 
 
 

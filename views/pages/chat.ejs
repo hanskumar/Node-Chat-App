@@ -178,9 +178,14 @@
                                                 <div class="user-chat-content">
                                                     <div class="ctext-wrap">
                                                         <div class="ctext-wrap-content">
-                                                            <p class="mb-0"><%=msg.message%></p>
-                                                            
-                                                            <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">10:02</span></p>
+                                                            <% if(msg.media == 'msg') { %>
+                                                                <p class="mb-0"><%=msg.message%></p>
+                                                            <% } else if(msg.media == 'audio') { %>
+                                                                <audio src="<%= msg.media_content %>"  id="audio"  type="video/webm" controls> </audio>    
+                                                            <% } else { %>
+                                                                <p class="mb-0"><%=msg.message%></p>
+                                                            <% } %>    
+                                                            <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle"><%= helper.GetHourMinutes(msg.createdAt) %></span></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -224,7 +229,8 @@
                                 <div class="col-auto">
                                     <div class="chat-input-links ml-md-2" style="margin-top: 20px;">
 
-                                        <ul class="list-inline mb-0" id="media_container">
+                                        <ul class="list-inline mb-0" id="media_container">   
+
 
                                             <li class="list-inline-item" data-toggle="tooltip" data-placement="top" title="Voice Recoder">
                                                 <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect voice_recoder">
@@ -232,12 +238,18 @@
                                                 </button>
                                             </li>
 
-                                            <li class="list-inline-item" data-toggle="tooltip" data-placement="top" title="Attached File">  
-                                                    <!--<input type="file" name="media_attachment" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect media_attachment">--->
+                                            <li class="list-inline-item" data-toggle="tooltip" data-placement="top" title="Video Recoder">
+                                                <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect" id="start_video_recoder">
+                                                    <i class="ri-live-fill" aria-hidden="true" style="font-size: 32px;"></i>
+                                                </button>
+                                            </li>
 
-                                                    <button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect">
-                                                       <i class="ri-attachment-fill"></i>
-                                                    </button> 
+                                            <li class="list-inline-item" data-toggle="tooltip" data-placement="top" title="Attached File">  
+                                                    <input type="file" name="media_attachment" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect media_attachment">
+
+                                                    <!--<button type="button" class="btn btn-link text-decoration-none font-size-16 btn-lg waves-effect">
+                                                       <i class="ri-attachment-fill" style="font-size: 32px;"></i>
+                                                    </button>--> 
                                             </li>
                                         </ul>
 

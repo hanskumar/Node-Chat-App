@@ -13,8 +13,8 @@ const toastr        = require("express-toastr");
 
 const passport      = require("passport");
 
-const streamBuffers = require('stream-buffers');
-const Grid          = require('gridfs-stream');
+/* const streamBuffers = require('stream-buffers');
+const Grid          = require('gridfs-stream'); */
 
 
 require("dotenv").config();
@@ -25,12 +25,12 @@ require('./config/dbConnect')();
 
 var conn = mongoose.connection;
 
-Grid.mongo = mongoose.mongo;
+/* Grid.mongo = mongoose.mongo;
 var gfs;
 conn.once('open', function () {
   console.log('open');
   gfs = Grid(conn.db);
-});
+}); */
 
 // view engine setup
 app.set('view engine', 'ejs');
